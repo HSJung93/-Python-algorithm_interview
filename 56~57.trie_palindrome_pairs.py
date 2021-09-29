@@ -79,6 +79,8 @@ class Trie:
 
   def insert(self, index: int , word: str) -> None:
     node = self.root
+
+    # 이미 그 자체로 palin인 값들은 root.palindrome_word_ids에 저장
     for i, char in enumerate(reversed(word)):
       if self.is_palindrome(word[0:len(word)-i]):
         node.palindrome_word_ids.append(index)
@@ -93,17 +95,26 @@ class Trie:
     node = self.root
 
     while word:
+
+      # 탐색 중간에 word가 끝나있고, 나머지 문자가 palin 이면 palin
+      # dcbc 탐색 시에 d가 들어있는 trie 구조로 체크
       if node.word_id >= 0:
         if self.is_palindrome(word):
           result.append([index, node.word_id])
+
       if not word[0] in node.children:
         return result
+
       node = node.children[word[0]]
       word = word[1:]
 
+    # 끝까지 탐색했는데 word_id 존재
+    # bbcd + dcbb
     if node.word_id >= 0 and node.word_id != index:
       result.append([index, node.word_id])
 
+    # 끝까지 탐색했는데 palindrome_word_ids 존재
+    # d + cbbcd
     for palindrome_word_id in node.palindrome_word_ids:
       result.append([index, palindrome_word_id])
 
